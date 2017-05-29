@@ -1,0 +1,54 @@
+--- # webserver.xml
+
+- hosts: vps
+  gather_facts: yes
+  vars:
+      mysql_user_name: web
+      mysql_user_password: web123
+      mysql_port: 3306
+  tasks:
+      - name: apache | mysql | php install
+        yum: name={{ item }} state=present enablerepo=remi-safe,remi-php56
+        with_items:
+            - httpd
+            - mysql-community-server
+            - MySQL-python
+            - php
+            - php-common
+            - php-xml
+            - php-pear
+            - php-mbstring
+            - php-mysql
+            - php-pecl-xdebug
+      - name: start && register chkconfig
+        service: name={{ item }} state=started enabled=yes
+        with_items:
+            - httpd
+            - mysqld
+      - name: Add MYSQL User
+        mysql_user: name={{ mysql_user_name }} password={{ mysql_user_password }} priv=*.*:ALL
+
+      #
+      # template copy
+      #
+      - name: Create Mysql configuration file
+        template: src=templates/my.cnf.j2 dest=/etc/my.cnf
+        notify:
+            - restart mysql
+      - name: Creates the index.html file
+        template: src=templates/index.php.j2 dest=/var/www/html/index.php
+      - name: php.ini configuration change
+        lineinfile:
+            dest: /etc/php.ini
+            backrefs: yes
+            regexp: '{{ item.regexp }}'
+            line: '{{ item.line }}'
+        with_items: 
+            - {regexp : '^;(date.timezone) =.*', line : '\1 = Asia/Tokyo'}
+            - {regexp : '^;(mbstring.internal_encoding) =.*', line : '\1 = UTF-8'}
+
+  handlers:
+      - name: restart mysql
+        service: name=mysqld state=restarted
+      - name: restart httpd
+        service: name=httpd state=restarted
