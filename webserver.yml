@@ -35,7 +35,7 @@
         template: src=templates/my.cnf.j2 dest=/etc/my.cnf
         notify:
             - restart mysql
-      - name: Creates the index.html file
+      - name: Creates the index.php file
         template: src=templates/index.php.j2 dest=/var/www/html/index.php
       - name: php.ini configuration change
         lineinfile:
