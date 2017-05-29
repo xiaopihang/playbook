@@ -7,6 +7,10 @@
       mysql_user_password: web123
       mysql_port: 3306
   tasks:
+      - name: common install
+        yum: name={{ item }} state=present
+        with_items:
+            - git
       - name: apache | mysql | php install
         yum: name={{ item }} state=present enablerepo=remi-safe,remi-php56
         with_items:

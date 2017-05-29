@@ -3,9 +3,10 @@
 - hosts: vps
   gather_facts: no
   tasks:
-    - name: Add EPEL/Remi yum repository
+    - name: Add EPEL/Remi/MySQL/GIT yum repository
       yum: name={{ item }}
       with_items:
           - http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
           - http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
           - http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+          - http://opensource.wandisco.com/centos/6/git/x86_64/wandisco-git-release-6-1.noarch.rpm
