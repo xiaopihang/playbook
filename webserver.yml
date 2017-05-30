@@ -1,5 +1,9 @@
 --- # webserver.xml
 
+#
+# memcached-tool localhost:11211 dump 2>&1 | strings |egrep ^add | grep
+# memcachedの情報とる
+#
 - hosts: vps
   gather_facts: yes
   vars:
@@ -37,6 +41,7 @@
 
       #
       # template copy
+      # https://github.com/aligajani/ansible-playbooks-laravel-5/blob/master/roles/geerlingguy.composer/tasks/main.yml
       #
       - name: Create Mysql configuration file
         template: src=templates/my.cnf.j2 dest=/etc/my.cnf
@@ -53,6 +58,14 @@
         with_items: 
             - {regexp : '^;(date.timezone) =.*', line : '\1 = Asia/Tokyo'}
             - {regexp : '^;(mbstring.internal_encoding) =.*', line : '\1 = UTF-8'}
+
+      #
+      # Composer Install
+      #
+      - name: Install composer for php
+        shell: 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'
+        args:
+            warn: no
 
   handlers:
       - name: restart mysql
