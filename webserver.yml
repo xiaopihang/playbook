@@ -14,6 +14,7 @@
             - git
       - name: apache | mysql | php install
         yum: name={{ item }} state=present enablerepo=remi-safe,remi-php56
+        # openssl and tokenizer php extensions are included in php-common | yum search php-
         with_items:
             - httpd
             - mysql-community-server
@@ -24,6 +25,7 @@
             - php-pear
             - php-mbstring
             - php-mysql
+            - php-pdo
             - php-pecl-xdebug
       - name: start && register chkconfig
         service: name={{ item }} state=started enabled=yes
